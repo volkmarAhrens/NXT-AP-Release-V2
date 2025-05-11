@@ -1,12 +1,9 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
-	"sap/ui/demo/basicTemplate/model/formatter"
-], function(Controller, formatter) {
+	"sap/ui/core/mvc/Controller"
+], function(Controller) {
 	"use strict";
 
-	return Controller.extend("sap.ui.demo.basicTemplate.controller.App", {
-
-		formatter: formatter,
+	return Controller.extend("nxt.ap.release.controller.App", {
 
 		onInit: function () {
 

@@ -3,22 +3,28 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Basic Template</title>
+	<title>NXT AP Release</title>
 
-	<script id="sap-ui-bootstrap"
-			src="resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_horizon"
-			data-sap-ui-resourceroots='{
-				"sap.ui.demo.basicTemplate": "./"
-			}'
-			data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
-			data-sap-ui-compatVersion="edge"
-			data-sap-ui-async="true"
-			data-sap-ui-frameOptions="trusted">
+	<!-- Favicons for various sizes -->
+	<link rel="icon" type="image/png" sizes="16x16" href="resources/img/favicon-16x16.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="resources/img/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="64x64" href="resources/img/favicon-64x64.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="resources/img/favicon-96x96.png">
+	<link rel="apple-touch-icon" href="resources/img/nxt4sap.png">
+
+	<script
+    id="sap-ui-bootstrap"
+    src="../resources/sap-ui-core.js"
+    data-sap-ui-theme="sap_fiori_3"
+    data-sap-ui-resourceroots='{"nxt.ap.release": "./"}'
+    data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+    data-sap-ui-async="true"
+    data-sap-ui-libs="sap.m,sap.f"
+    data-sap-ui-frameOptions="trusted">
 	</script>
 </head>
 
 <body class="sapUiBody">
-	<div data-sap-ui-component data-name="sap.ui.demo.basicTemplate" data-id="container" data-settings='{"id" : "basicTemplate"}'></div>
+	<div data-sap-ui-component data-name="nxt.ap.release" data-id="container" data-settings='{"id" : "aprelease"}'></div>
 </body>
 </html>

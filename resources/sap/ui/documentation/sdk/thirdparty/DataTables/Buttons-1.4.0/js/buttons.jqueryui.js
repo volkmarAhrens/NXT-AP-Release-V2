@@ -1,0 +1,5 @@
+/*! jQuery UI integration for DataTables' Buttons
+ * ©2016 SpryMedia Ltd - datatables.net/license
+ */
+(function(t){if(typeof define==="function"&&define.amd){define(["jquery","datatables.net-jqui","datatables.net-buttons"],function(e){return t(e,window,document)})}else if(typeof exports==="object"){module.exports=function(e,n){if(!e){e=window}if(!n||!n.fn.dataTable){n=require("datatables.net-jqui")(e,n).$}if(!n.fn.dataTable.Buttons){require("datatables.net-buttons")(e,n)}return t(n,e,e.document)}}else{t(jQuery,window,document)}})(function(t,e,n,u){"use strict";var i=t.fn.dataTable;t.extend(true,i.Buttons.defaults,{dom:{container:{className:"dt-buttons ui-buttonset"},button:{className:"dt-button ui-button ui-state-default ui-button-text-only",disabled:"ui-state-disabled",active:"ui-state-active"},buttonLiner:{tag:"span",className:"ui-button-text"}}});i.ext.buttons.collection.text=function(t){return t.i18n("buttons.collection",'Collection <span class="ui-button-icon-primary ui-icon ui-icon-triangle-1-s"/>')};return i.Buttons});
+//# sourceMappingURL=buttons.jqueryui.js.map
