@@ -22,18 +22,22 @@ sap.ui.define([
 				bundleName: "nxt.ap.release.i18n.i18n"
 			});
 			this.setModel(oI18nModel, "i18n");
-			// call the base component's init function
-			UIComponent.prototype.init.apply(this, arguments);
+
+			// --- BEGIN: Set mock data model globally ---
+			/**
+			 * Register the mockdata.json as a named model ("mock") at the Component level for global access.
+			 * This ensures all views can access mock data via the "mock" model name.
+			 */
+			var oMockModel = models.createMockModel();
+			this.setModel(oMockModel); // Set as default model
+			this.setModel(oMockModel, "mock"); // Also set as named model for explicit access
+			// --- END: Set mock data model globally ---
 
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
 
-			// --- BEGIN: Set default data model globally ---
-			// Register the mockdata.json as the default model at the Component level for global access.
-			var oMockModel = new sap.ui.model.json.JSONModel();
-			oMockModel.loadData("model/mockdata.json", null, false); // synchronous load
-			this.setModel(oMockModel); // Default model, no name
-			// --- END: Set default data model globally ---
+			// call the base component's init function
+			UIComponent.prototype.init.apply(this, arguments);
 
 			// create the views based on the url/hash
 			this.getRouter().initialize();

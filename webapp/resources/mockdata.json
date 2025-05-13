@@ -1,0 +1,106 @@
+{
+  "Invoices": [
+    {
+      "Header": {
+        "CompanyCode": "1000",
+        "SAPDocumentNumber": "5100001234",
+        "FiscalYear": "2025",
+        "VendorName": "Example Vendor GmbH",
+        "VendorID": "2000123456",
+        "InvoiceReference": "INV-2025-0001",
+        "InvoiceNetAmount": 1200.75,
+        "InvoiceTaxAmount": 228.14,
+        "InvoiceTotalAmount": 1428.89,
+        "InvoiceCurrency": "EUR",
+        "InvoiceDate": "2025-05-01",
+        "NatureOfInvoice": "Goods Purchase",
+        "InvoiceDueDate": "2025-06-01",
+        "DiscountAmount": 50.00,
+        "UnplannedCosts": 12.00,
+        "InvoicePDFUrl": "resources/invoices/5100001234.pdf"
+      },
+      "LineItems": [
+        {
+          "LineType": "PO",
+          "PurchaseOrder": "4500001111",
+          "Description": "Laptop Purchase",
+          "MaterialCode": "MAT-0001",
+          "Quantity": 5,
+          "Amount": 1000.00,
+          "GLAccount": "400000",
+          "CostCenter": "CC1001",
+          "WBS": "WBS-1001"
+        },
+        {
+          "LineType": "GL",
+          "PurchaseOrder": "",
+          "Description": "Consulting Fee",
+          "MaterialCode": "MAT-0002",
+          "Quantity": 1,
+          "Amount": 200.75,
+          "GLAccount": "410000",
+          "CostCenter": "CC1002",
+          "WBS": "WBS-1002"
+        }
+      ],
+      "Process": {
+        "NXTAPDocumentNumber": "9000000001",
+        "Requestor": "Max Mustermann",
+        "Approver": "Erika Musterfrau",
+        "APTime": 4,
+        "Activity": "Release"
+      }
+    },
+    {
+      "Header": {
+        "CompanyCode": "2000",
+        "SAPDocumentNumber": "5100005678",
+        "FiscalYear": "2025",
+        "VendorName": "Acme Supplies AG",
+        "VendorID": "2000654321",
+        "InvoiceReference": "INV-2025-0002",
+        "InvoiceNetAmount": 800.00,
+        "InvoiceTaxAmount": 152.00,
+        "InvoiceTotalAmount": 952.00,
+        "InvoiceCurrency": "USD",
+        "InvoiceDate": "2025-05-03",
+        "NatureOfInvoice": "Service Fee",
+        "InvoiceDueDate": "2025-06-03",
+        "DiscountAmount": 0.00,
+        "UnplannedCosts": 0.00,
+        "InvoicePDFUrl": "resources/invoices/5100005678.pdf"
+      },
+      "LineItems": [
+        {
+          "LineType": "PO",
+          "PurchaseOrder": "4500002222",
+          "Description": "Printer Toner",
+          "MaterialCode": "MAT-0100",
+          "Quantity": 10,
+          "Amount": 500.00,
+          "GLAccount": "400100",
+          "CostCenter": "CC2001",
+          "WBS": "WBS-2001"
+        },
+        {
+          "LineType": "GL",
+          "PurchaseOrder": "",
+          "Description": "Maintenance",
+          "MaterialCode": "MAT-0101",
+          "Quantity": 1,
+          "Amount": 300.00,
+          "GLAccount": "410100",
+          "CostCenter": "CC2002",
+          "WBS": "WBS-2002"
+        }
+      ],
+      "Process": {
+        "NXTAPDocumentNumber": "9000000002",
+        "Requestor": "John Doe",
+        "Approver": "Jane Smith",
+        "APTime": 4,
+        "Activity": "Release"
+      }
+    }
+  ]
+}

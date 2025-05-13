@@ -7,192 +7,194 @@
     displayBlock="true">
 
     <f:DynamicPage id="apReleasePage">
-        <f:title>
-            <f:DynamicPageTitle>
-                <!-- App Header with Logo and Titles -->
-                <f:heading>
-                    <!-- Fiori-compliant header: logo left, titles right, vertical center -->
-<HBox alignItems="Center" justifyContent="Start" class="sapUiSmallMarginBottom">
-    <Image src="resources/img/nxt4sap.png" alt="Company Logo" width="60px" height="40px"/>
-    <VBox class="sapUiSmallMarginBegin">
-        <Title text="{i18n>apReleaseTitle}" level="H1"/>
-        <Text text="{i18n>appSubtitle}" class="sapUiTinyMarginTop"/>
-    </VBox>
-</HBox>
-                </f:heading>
-                <f:actions>
-                    <Button text="{i18n>releaseForPosting}" type="Emphasized" press="onReleaseForPosting" icon="sap-icon://accept"/>
-                    <Button text="{i18n>rejectWithComment}" press="onRejectWithComment" icon="sap-icon://decline"/>
-                    <Button text="{i18n>forwardWithInquiry}" press="onForwardWithInquiry" icon="sap-icon://forward"/>
-                    <Button text="{i18n>documents}" press="onDocuments" icon="sap-icon://document"/>
-                    <Button text="{i18n>processLog}" press="onProcessLog" icon="sap-icon://process"/>
-                    <Button text="{i18n>nxtAi}" press="onNxtAi" icon="sap-icon://lightbulb"/>
-                </f:actions>
-            </f:DynamicPageTitle>
+        <f:header>
+    <f:DynamicPageHeader>
+        <HBox alignItems="Center" justifyContent="SpaceBetween">
+            <HBox alignItems="Center">
+                <Image src="resources/img/nxt4sap.png" alt="Company Logo" width="60px" height="40px"/>
+                <Text text="{i18n>appTitle}" class="sapUiTinyMarginBegin"/>
+            </HBox>
+            <HBox alignItems="Center">
+                <Text text="{app>/userName}" class="sapUiTinyMarginEnd"/>
+                <Text text="{app>/language}" class="sapUiTinyMarginEnd"/>
+            </HBox>
+        </HBox>
+    </f:DynamicPageHeader>
+</f:header>
+<f:title>
+    <f:DynamicPageTitle/>
+
         </f:title>
         <f:content>
             <VBox>
+    
                 <!-- Header Info -->
-                <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
-                    <VBox id="headerVBox">
-                        <HBox><Text text="{i18n>costCenter}"/><Text text="{/ProcessInfo/0/costCenterDescription}"/></HBox>
-                        <HBox><Text text="{i18n>requester}"/><Text text="{/ProcessInfo/0/requester}"/></HBox>
-                        <HBox><Text text="{i18n>approvedBy}"/><Text text="{/ProcessInfo/0/approvedBy}"/></HBox>
-                    </VBox>
-                    <VBox>
-                        <HBox><Text text="{i18n>natureOfInvoice}"/><Text text="{/ProcessInfo/0/natureOfInvoice}"/></HBox>
-                        <HBox><Text text="{i18n>totalAmount}"/><Text text="{/ProcessInfo/0/totalAmount}"/></HBox>
-                        <HBox><Text text="{i18n>invoiceDate}"/><Text text="{/ProcessInfo/0/invoiceDate}"/></HBox>
-                    </VBox>
-                    <VBox>
-                        <HBox><Text text="{i18n>dueDate}"/><Text text="{/ProcessInfo/0/dueDate}"/></HBox>
-                        <HBox><Text text="{i18n>discount}"/><Text text="{/ProcessInfo/0/discountPercentage}"/></HBox>
-                        <HBox><Text text="{i18n>apTime}"/><Text text="{/ProcessInfo/0/apTimeDays}"/></HBox>
-                    </VBox>
-                    <VBox>
-                        <HBox><Text text="{i18n>releaseStep}"/><Text text="{/ProcessInfo/0/releaseStep}"/></HBox>
-                        <HBox><Text text="{i18n>firstReleaser}"/><Text text="{/ProcessInfo/0/firstReleaser}"/></HBox>
-                        <HBox><Text text="{i18n>secondReleaser}"/><Text text="{/ProcessInfo/0/secondReleaser}"/></HBox>
-                    </VBox>
-                </HBox>
-
+                <Text text="{/Invoices/0/Header/InvoiceTotalAmount}" class="sapUiSmallMarginBottom" />
+                <VBox class="sapUiTinyMarginBottom">
+  <HBox id="invoiceOverviewPanel" justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+    <!-- Column 1 -->
+    <VBox>
+        <HBox>
+            <Text text="Requester:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Process/Requestor}"/>
+        </HBox>
+        <HBox>
+            <Text text="Approver:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Process/Approver}"/>
+        </HBox>
+        <HBox>
+            <Text text="Nature of Invoice:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Header/NatureOfInvoice}"/>
+        </HBox>
+    </VBox>
+    <!-- Column 2 -->
+    <VBox>
+        <HBox>
+            <Text text="Total amount:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Header/InvoiceTotalAmount}"/>
+        </HBox>
+        <HBox>
+            <Text text="Invoice Date:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Header/InvoiceDate}"/>
+        </HBox>
+        <HBox>
+            <Text text="Due date:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Header/InvoiceDueDate}"/>
+        </HBox>
+    </VBox>
+    <!-- Column 3 -->
+    <VBox>
+        <HBox>
+            <Text text="Discount:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Header/DiscountAmount}"/>
+        </HBox>
+        <HBox>
+            <Text text="AP Time (D):" class="sapUiSmallMarginEnd"/>
+            <Text text="{Process/APTime}"/>
+        </HBox>
+        <HBox>
+            <Text text="Activity:" class="sapUiSmallMarginEnd"/>
+            <Text text="{Process/Activity}"/>
+        </HBox>
+    </VBox>
+</HBox>
+</VBox>
                 <!-- Invoices Table -->
-                <Table
-                    id="invoicesTable"
-                    items="{Invoices}"
-                    growing="true"
-                    growingScrollToLoad="true"
-                    width="100%">
-                    <headerToolbar>
-                        <OverflowToolbar>
-    <Title text="{i18n>invoices}" level="H2"/>
-    <ToolbarSpacer/>
-    <SearchField width="15rem" search="onInvoiceSearch" placeholder="{i18n>search}"/>
-    <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshInvoices"/>
-    <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortInvoices"/>
-    <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
-    <Button icon="sap-icon://filter" tooltip="Filter"/>
-    <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
-</OverflowToolbar>
-                    </headerToolbar>
-                    <columns>
-                        <Column width="4em">
-                            <Text text="{i18n>status}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>companyCode}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>sapDocument}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>vendorId}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>vendorName}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>reference}"/>
-                        </Column>
-                        <Column hAlign="End">
-                            <Text text="{i18n>totalAmount}"/>
-                        </Column>
-                        <Column hAlign="End">
-                            <Text text="{i18n>taxAmount}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>currency}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>invoiceDate}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>dueDate}"/>
-                        </Column>
-                        <Column hAlign="End">
-                            <Text text="{i18n>discountAmount}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>pdfDocument}"/>
-                        </Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem>
-                            <cells>
-                                <ObjectStatus text="{Status}"/>
-                                <Text text="{CompanyCode}"/>
-                                <Text text="{SAPDocument}"/>
-                                <Text text="{VendorID}"/>
-                                <Text text="{VendorName}"/>
-                                <Text text="{Reference}"/>
-                                <Text text="{TotalAmount}"/>
-                                <Text text="{TaxAmount}"/>
-                                <Text text="{Currency}"/>
-                                <Text text="{InvoiceDate}"/>
-                                <Text text="{DueDate}"/>
-                                <Text text="{DiscountAmount}"/>
-                                <Button icon="sap-icon://attachment" press="onOpenPdf" tooltip="{i18n>openPdf}"/>
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
+                <!-- Invoices Table (Master) -->
+<Table
+    id="invoicesTable"
+    mode="SingleSelectMaster"
+    items="{/Invoices}"
+    selectionChange="onInvoiceSelectionChange"
+    updateFinished="onInvoicesTableUpdateFinished"
+    growing="true"
+    growingScrollToLoad="true"
+    width="100%">
+    <headerToolbar>
+        <OverflowToolbar>
+            <Title text="{i18n>invoices}" level="H2"/>
+            <SearchField width="15rem" search="onInvoiceSearch" placeholder="{i18n>search}"/>
+            <Button text="{i18n>releaseForPosting}" type="Emphasized" press="onReleaseForPosting" icon="sap-icon://accept"/>
+            <Button text="{i18n>rejectWithComment}" press="onRejectWithComment" icon="sap-icon://decline"/>
+            <Button text="{i18n>forwardWithInquiry}" press="onForwardWithInquiry" icon="sap-icon://forward"/>
+            <Button text="{i18n>documents}" press="onDocuments" icon="sap-icon://document"/>
+            <Button text="{i18n>processLog}" press="onProcessLog" icon="sap-icon://process"/>
+            <Button text="{i18n>nxtAi}" press="onNxtAi" icon="sap-icon://lightbulb"/>
+            <ToolbarSpacer/>
+            <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshInvoices"/>
+            <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortInvoices"/>
+            <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
+            <Button icon="sap-icon://filter" tooltip="Filter"/>
+            <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
+        </OverflowToolbar>
+    </headerToolbar>
+    <columns>
+        <Column><Text text="{i18n>companyCode}"/></Column>
+        <Column><Text text="{i18n>sapDocumentNumber}"/></Column>
+        <Column><Text text="{i18n>fiscalYear}"/></Column>
+        <Column><Text text="{i18n>vendorName}"/></Column>
+        <Column><Text text="{i18n>vendorId}"/></Column>
+        <Column><Text text="{i18n>invoiceReference}"/></Column>
+        <Column><Text text="{i18n>invoiceNetAmount}"/></Column>
+        <Column><Text text="{i18n>invoiceTaxAmount}"/></Column>
+        <Column><Text text="{i18n>invoiceTotalAmount}"/></Column>
+        <Column><Text text="{i18n>invoiceCurrency}"/></Column>
+        <Column><Text text="{i18n>invoiceDate}"/></Column>
+        <Column><Text text="{i18n>natureOfInvoice}"/></Column>
+        <Column><Text text="{i18n>invoiceDueDate}"/></Column>
+        <Column><Text text="{i18n>discountAmount}"/></Column>
+        <Column><Text text="{i18n>unplannedCosts}"/></Column>
+    </columns>
+    <items>
+        <ColumnListItem>
+            <cells>
+                <Text text="{Header/CompanyCode}"/>
+                <Text text="{Header/SAPDocumentNumber}"/>
+                <Text text="{Header/FiscalYear}"/>
+                <Text text="{Header/VendorName}"/>
+                <Text text="{Header/VendorID}"/>
+                <Text text="{Header/InvoiceReference}"/>
+                <Text text="{Header/InvoiceNetAmount}"/>
+                <Text text="{Header/InvoiceTaxAmount}"/>
+                <Text text="{Header/InvoiceTotalAmount}"/>
+                <Text text="{Header/InvoiceCurrency}"/>
+                <Text text="{Header/InvoiceDate}"/>
+                <Text text="{Header/NatureOfInvoice}"/>
+                <Text text="{Header/InvoiceDueDate}"/>
+                <Text text="{Header/DiscountAmount}"/>
+                <Text text="{Header/UnplannedCosts}"/>
+            </cells>
+        </ColumnListItem>
+    </items>
+</Table>
 
                 <!-- Line Items Table -->
-                <Table
-                    id="lineItemsTable"
-                    items="{LineItems}"
-                    growing="true"
-                    growingScrollToLoad="true"
-                    width="100%">
-                    <headerToolbar>
-                        <OverflowToolbar>
-    <Title text="{i18n>lineItems}" level="H2"/>
-    <ToolbarSpacer/>
-    <SearchField width="15rem" search="onLineItemSearch" placeholder="{i18n>search}"/>
-    <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshLineItems"/>
-    <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortLineItems"/>
-    <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
-    <Button icon="sap-icon://filter" tooltip="Filter"/>
-    <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
-</OverflowToolbar>
-                    </headerToolbar>
-                    <columns>
-                        <Column>
-                            <Text text="{i18n>lineType}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>purchaseOrder}"/>
-                        </Column>
-                        <Column hAlign="End">
-                            <Text text="{i18n>netAmount}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>taxCode}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>description}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>glAccount}"/>
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>costCenter}"/>
-                        </Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem>
-                            <cells>
-                                <Text text="{LineType}"/>
-                                <Text text="{PurchaseOrder}"/>
-                                <Text text="{NetAmount}"/>
-                                <Text text="{TaxCode}"/>
-                                <Text text="{Description}"/>
-                                <Text text="{GLAccount}"/>
-                                <Text text="{CostCenter}"/>
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
+                <!-- Line Items Table (Detail) -->
+<Table
+    id="lineItemsTable"
+    items="{path: 'LineItems'}"
+    growing="true"
+    growingScrollToLoad="true"
+    width="100%">
+    <headerToolbar>
+        <OverflowToolbar>
+            <Title text="{i18n>lineItems}" level="H2"/>
+            <ToolbarSpacer/>
+            <SearchField width="15rem" search="onLineItemSearch" placeholder="{i18n>search}"/>
+            <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshLineItems"/>
+            <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortLineItems"/>
+            <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
+            <Button icon="sap-icon://filter" tooltip="Filter"/>
+            <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
+        </OverflowToolbar>
+    </headerToolbar>
+    <columns>
+        <Column><Text text="{i18n>lineType}"/></Column>
+        <Column><Text text="{i18n>purchaseOrder}"/></Column>
+        <Column><Text text="{i18n>description}"/></Column>
+        <Column><Text text="{i18n>materialCode}"/></Column>
+        <Column><Text text="{i18n>quantity}"/></Column>
+        <Column><Text text="{i18n>amount}"/></Column>
+        <Column><Text text="{i18n>glAccount}"/></Column>
+        <Column><Text text="{i18n>costCenter}"/></Column>
+        <Column><Text text="{i18n>wbs}"/></Column>
+    </columns>
+    <items>
+        <ColumnListItem>
+            <cells>
+                <Text text="{LineType}"/>
+                <Text text="{PurchaseOrder}"/>
+                <Text text="{Description}"/>
+                <Text text="{MaterialCode}"/>
+                <Text text="{Quantity}"/>
+                <Text text="{Amount}"/>
+                <Text text="{GLAccount}"/>
+                <Text text="{CostCenter}"/>
+                <Text text="{WBS}"/>
+            </cells>
+        </ColumnListItem>
+    </items>
+</Table>
             </VBox>
         </f:content>
     </f:DynamicPage>
