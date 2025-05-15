@@ -176,7 +176,7 @@
         <Column id="invoicesTableColumnInvoiceNetAmount"><Text text="{i18n>invoiceNetAmount}"/></Column>
         <Column id="invoicesTableColumnInvoiceTaxAmount"><Text text="{i18n>invoiceTaxAmount}"/></Column>
         <Column id="invoicesTableColumnInvoiceTotalAmount"><Text text="{i18n>invoiceTotalAmount}"/></Column>
-        <Column id="invoicesTableColumnInvoiceCurrency"><Text text="{i18n>invoiceCurrency}"/></Column>
+        <!-- Currency column removed: currency is now included in the formatted amount fields -->
         <Column id="invoicesTableColumnInvoiceDate"><Text text="{i18n>invoiceDate}"/></Column>
         <Column id="invoicesTableColumnNatureOfInvoice"><Text text="{i18n>natureOfInvoice}"/></Column>
         <Column id="invoicesTableColumnInvoiceDueDate"><Text text="{i18n>invoiceDueDate}"/></Column>
@@ -195,7 +195,7 @@
                 <Text text="{Header/InvoiceNetAmountFormatted}"/>
                 <Text text="{Header/InvoiceTaxAmountFormatted}"/>
                 <Text text="{Header/InvoiceTotalAmountFormatted}"/>
-                <Text text="{Header/InvoiceCurrency}"/>
+                <!-- Currency cell removed: now included in formatted amount fields -->
                 <Text text="{Header/InvoiceDate}"/>
                 <Text text="{Header/NatureOfInvoice}"/>
                 <Text text="{Header/InvoiceDueDate}"/>
