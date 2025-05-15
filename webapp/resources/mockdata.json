@@ -28,8 +28,8 @@
           "Quantity": 5,
           "Amount": 1000.00,
           "GLAccount": "400000",
-          "CostCenter": "CC1001",
-          "WBS": "WBS-1001"
+          "CostCenter": "671001",
+          "WBS": "ARE-1001"
         },
         {
           "LineType": "GL",
@@ -39,8 +39,8 @@
           "Quantity": 1,
           "Amount": 200.75,
           "GLAccount": "410000",
-          "CostCenter": "CC1002",
-          "WBS": "WBS-1002"
+          "CostCenter": "341002",
+          "WBS": "ARE-1002"
         }
       ],
       "Process": {
@@ -79,8 +79,8 @@
           "Quantity": 10,
           "Amount": 500.00,
           "GLAccount": "400100",
-          "CostCenter": "CC2001",
-          "WBS": "WBS-2001"
+          "CostCenter": "452001",
+          "WBS": "TTE-2001"
         },
         {
           "LineType": "GL",
@@ -90,8 +90,8 @@
           "Quantity": 1,
           "Amount": 300.00,
           "GLAccount": "410100",
-          "CostCenter": "CC2002",
-          "WBS": "WBS-2002"
+          "CostCenter": "482002",
+          "WBS": "TTE-2002"
         }
       ],
       "Process": {

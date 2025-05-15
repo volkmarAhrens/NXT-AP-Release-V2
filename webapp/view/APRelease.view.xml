@@ -1,22 +1,63 @@
 <mvc:View
     controllerName="nxt.ap.release.controller.APRelease"
+    xmlns:util="nxt.ap.release.util"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:f="sap.f"
     xmlns:core="sap.ui.core"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout"
     displayBlock="true">
-
+    
+    <!-- We can use the util namespace that's already defined at the top: xmlns:util="nxt.ap.release.util" -->
+    
     <f:DynamicPage id="apReleasePage">
         <f:header>
     <f:DynamicPageHeader>
-        <HBox alignItems="Center" justifyContent="SpaceBetween">
+        <HBox alignItems="Center" justifyContent="SpaceBetween" class="sapUiMediumMarginBeginEnd">
+            <!-- App Branding Section -->
             <HBox alignItems="Center">
                 <Image src="resources/img/nxt4sap.png" alt="Company Logo" width="60px" height="40px"/>
-                <Text text="{i18n>appTitle}" class="sapUiTinyMarginBegin"/>
+                <Title text="{i18n>appTitle}" level="H3" class="sapUiTinyMarginBegin"/>
             </HBox>
-            <HBox alignItems="Center">
-                <Text text="{app>/userName}" class="sapUiTinyMarginEnd"/>
-                <Text text="{app>/language}" class="sapUiTinyMarginEnd"/>
+            
+            <!-- User Identity Section - SSO Information -->
+            <HBox alignItems="Center" class="sapUiTinyMarginTopBottom">
+                <Avatar 
+                    src="{= ${user>/photoUrl} ? ${user>/photoUrl} : 'sap-icon://person-placeholder' }" 
+                    displaySize="XS" 
+                    class="sapUiTinyMarginEnd"
+                    press="onAvatarPress"/>
+                <VBox>
+                    <!-- User Display Name from Google/Microsoft SSO -->
+                    <HBox alignItems="Center">
+                        <ObjectStatus 
+                            title="" 
+                            text="{user>/displayName}" 
+                            state="Information" 
+                            icon="{= ${user>/isExternalUser} ? 'sap-icon://journey-arrive' : 'sap-icon://employee' }"/>
+                    </HBox>
+                    <!-- User Email/Account Type Info with Language Indicator -->
+                    <HBox alignItems="Center" class="sapUiTinyFontSize">
+                        <Text text="{= ${user>/email} || ${user>/accountType} + ' Account' }" />
+                        <Label text=" | " class="sapUiTinyMarginBeginEnd" />
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://translate" size="0.75rem" class="sapUiTinyMarginEnd" />
+                            <ObjectStatus 
+                                text="{path: 'viewModel>/currentLanguage', formatter: '.formatLanguageName'}"
+                                active="true" 
+                                state="Information"
+                                press="onOpenLanguageDialog"
+                                tooltip="Change Language" />
+                        </HBox>
+                    </HBox>
+                </VBox>
+                <Button 
+                    icon="sap-icon://menu" 
+                    type="Transparent" 
+                    press="onUserMenuPress" 
+                    class="sapUiTinyMarginBegin" 
+                    tooltip="User Options"/>
             </HBox>
         </HBox>
     </f:DynamicPageHeader>
@@ -29,55 +70,72 @@
             <VBox>
     
                 <!-- Header Info -->
-                <Text text="{/Invoices/0/Header/InvoiceTotalAmount}" class="sapUiSmallMarginBottom" />
+                
                 <VBox class="sapUiTinyMarginBottom">
-  <HBox id="invoiceOverviewPanel" justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
-    <!-- Column 1 -->
-    <VBox>
-        <HBox>
-            <Text text="Requester:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Process/Requestor}"/>
-        </HBox>
-        <HBox>
-            <Text text="Approver:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Process/Approver}"/>
-        </HBox>
-        <HBox>
-            <Text text="Nature of Invoice:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Header/NatureOfInvoice}"/>
-        </HBox>
-    </VBox>
-    <!-- Column 2 -->
-    <VBox>
-        <HBox>
-            <Text text="Total amount:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Header/InvoiceTotalAmount}"/>
-        </HBox>
-        <HBox>
-            <Text text="Invoice Date:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Header/InvoiceDate}"/>
-        </HBox>
-        <HBox>
-            <Text text="Due date:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Header/InvoiceDueDate}"/>
-        </HBox>
-    </VBox>
-    <!-- Column 3 -->
-    <VBox>
-        <HBox>
-            <Text text="Discount:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Header/DiscountAmount}"/>
-        </HBox>
-        <HBox>
-            <Text text="AP Time (D):" class="sapUiSmallMarginEnd"/>
-            <Text text="{Process/APTime}"/>
-        </HBox>
-        <HBox>
-            <Text text="Activity:" class="sapUiSmallMarginEnd"/>
-            <Text text="{Process/Activity}"/>
-        </HBox>
-    </VBox>
-</HBox>
+    <layout:Grid id="invoiceOverviewPanel" defaultSpan="XL4 L4 M4 S12" class="sapUiTinyMarginBottom">
+        <!-- Column 1: Requester, Approver, Nature of Invoice -->
+        <VBox class="sapUiSmallMargin">
+            <!-- Row 1 -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="requesterLabel" text="Requester:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Process/Requestor}"/>
+            </HBox>
+            
+            <!-- Row 2 -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="approverLabel" text="Approver:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Process/Approver}"/>
+            </HBox>
+            
+            <!-- Row 3 -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="natureOfInvoiceLabel" text="Nature of Invoice:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Header/NatureOfInvoice}"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Column 2: Total amount, Discount, Invoice Date -->
+        <VBox class="sapUiSmallMargin">
+            <!-- Row 1: Total amount -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="totalAmountLabel" text="Total Amount:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Header/InvoiceTotalAmountFormatted}"/>
+            </HBox>
+            
+            <!-- Row 2: Discount (moved from column 3) -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="discountAmountLabel" text="Discount:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Header/DiscountAmountFormatted}"/>
+            </HBox>
+            
+            <!-- Row 3: Invoice Date (moved to bottom) -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="invoiceDateLabel" text="Invoice Date:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Header/InvoiceDate}"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Column 3: Activity, Due date, AP Time -->
+        <VBox class="sapUiSmallMargin">
+            <!-- Row 1: Activity (moved to top) -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="activityLabel" text="Activity:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Process/Activity}"/>
+            </HBox>
+            
+            <!-- Row 2: Due date (moved to middle) -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="invoiceDueDateLabel" text="Due Date:" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Header/InvoiceDueDate}"/>
+            </HBox>
+            
+            <!-- Row 3: AP Time (moved to bottom) -->
+            <HBox class="sapUiTinyMarginBottom">
+                <Label id="apTimeLabel" text="AP Time (D):" class="sapUiSmallMarginEnd" width="120px"/>
+                <Text text="{Process/APTime}"/>
+            </HBox>
+        </VBox>
+    </layout:Grid>
 </VBox>
                 <!-- Invoices Table -->
                 <!-- Invoices Table (Master) -->
@@ -93,7 +151,7 @@
     <headerToolbar>
         <OverflowToolbar>
             <Title text="{i18n>invoices}" level="H2"/>
-            <SearchField width="15rem" search="onInvoiceSearch" placeholder="{i18n>search}"/>
+            <!-- Search field removed per requirements -->
             <Button text="{i18n>releaseForPosting}" type="Emphasized" press="onReleaseForPosting" icon="sap-icon://accept"/>
             <Button text="{i18n>rejectWithComment}" press="onRejectWithComment" icon="sap-icon://decline"/>
             <Button text="{i18n>forwardWithInquiry}" press="onForwardWithInquiry" icon="sap-icon://forward"/>
@@ -101,29 +159,29 @@
             <Button text="{i18n>processLog}" press="onProcessLog" icon="sap-icon://process"/>
             <Button text="{i18n>nxtAi}" press="onNxtAi" icon="sap-icon://lightbulb"/>
             <ToolbarSpacer/>
-            <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshInvoices"/>
-            <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortInvoices"/>
-            <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
-            <Button icon="sap-icon://filter" tooltip="Filter"/>
-            <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
+            <Button icon="sap-icon://refresh" text="{i18n>refresh}" press="onRefreshInvoices"/>
+            <!-- Dropdown select removed per requirements -->
+            <Button icon="sap-icon://sort" text="{i18n>sort}" press="onSortInvoices"/>
+            <Button icon="sap-icon://filter" tooltip="{i18n>filter}" press="onFilterInvoices"/>
+            <Button icon="sap-icon://action-settings" tooltip="{i18n>personalizeColumns}" press="onPersonalizeInvoices"/>
         </OverflowToolbar>
     </headerToolbar>
     <columns>
-        <Column><Text text="{i18n>companyCode}"/></Column>
-        <Column><Text text="{i18n>sapDocumentNumber}"/></Column>
-        <Column><Text text="{i18n>fiscalYear}"/></Column>
-        <Column><Text text="{i18n>vendorName}"/></Column>
-        <Column><Text text="{i18n>vendorId}"/></Column>
-        <Column><Text text="{i18n>invoiceReference}"/></Column>
-        <Column><Text text="{i18n>invoiceNetAmount}"/></Column>
-        <Column><Text text="{i18n>invoiceTaxAmount}"/></Column>
-        <Column><Text text="{i18n>invoiceTotalAmount}"/></Column>
-        <Column><Text text="{i18n>invoiceCurrency}"/></Column>
-        <Column><Text text="{i18n>invoiceDate}"/></Column>
-        <Column><Text text="{i18n>natureOfInvoice}"/></Column>
-        <Column><Text text="{i18n>invoiceDueDate}"/></Column>
-        <Column><Text text="{i18n>discountAmount}"/></Column>
-        <Column><Text text="{i18n>unplannedCosts}"/></Column>
+        <Column id="invoicesTableColumnCompanyCode"><Text text="{i18n>companyCode}"/></Column>
+        <Column id="invoicesTableColumnSAPDocumentNumber"><Text text="{i18n>sapDocumentNumber}"/></Column>
+        <Column id="invoicesTableColumnFiscalYear"><Text text="{i18n>fiscalYear}"/></Column>
+        <Column id="invoicesTableColumnVendorName"><Text text="{i18n>vendorName}"/></Column>
+        <Column id="invoicesTableColumnVendorID"><Text text="{i18n>vendorId}"/></Column>
+        <Column id="invoicesTableColumnInvoiceReference"><Text text="{i18n>invoiceReference}"/></Column>
+        <Column id="invoicesTableColumnInvoiceNetAmount"><Text text="{i18n>invoiceNetAmount}"/></Column>
+        <Column id="invoicesTableColumnInvoiceTaxAmount"><Text text="{i18n>invoiceTaxAmount}"/></Column>
+        <Column id="invoicesTableColumnInvoiceTotalAmount"><Text text="{i18n>invoiceTotalAmount}"/></Column>
+        <Column id="invoicesTableColumnInvoiceCurrency"><Text text="{i18n>invoiceCurrency}"/></Column>
+        <Column id="invoicesTableColumnInvoiceDate"><Text text="{i18n>invoiceDate}"/></Column>
+        <Column id="invoicesTableColumnNatureOfInvoice"><Text text="{i18n>natureOfInvoice}"/></Column>
+        <Column id="invoicesTableColumnInvoiceDueDate"><Text text="{i18n>invoiceDueDate}"/></Column>
+        <Column id="invoicesTableColumnDiscountAmount"><Text text="{i18n>discountAmount}"/></Column>
+        <Column id="invoicesTableColumnUnplannedCosts"><Text text="{i18n>unplannedCosts}"/></Column>
     </columns>
     <items>
         <ColumnListItem>
@@ -134,15 +192,15 @@
                 <Text text="{Header/VendorName}"/>
                 <Text text="{Header/VendorID}"/>
                 <Text text="{Header/InvoiceReference}"/>
-                <Text text="{Header/InvoiceNetAmount}"/>
-                <Text text="{Header/InvoiceTaxAmount}"/>
-                <Text text="{Header/InvoiceTotalAmount}"/>
+                <Text text="{Header/InvoiceNetAmountFormatted}"/>
+                <Text text="{Header/InvoiceTaxAmountFormatted}"/>
+                <Text text="{Header/InvoiceTotalAmountFormatted}"/>
                 <Text text="{Header/InvoiceCurrency}"/>
                 <Text text="{Header/InvoiceDate}"/>
                 <Text text="{Header/NatureOfInvoice}"/>
                 <Text text="{Header/InvoiceDueDate}"/>
-                <Text text="{Header/DiscountAmount}"/>
-                <Text text="{Header/UnplannedCosts}"/>
+                <Text text="{Header/DiscountAmountFormatted}"/>
+                <Text text="{Header/UnplannedCostsFormatted}"/>
             </cells>
         </ColumnListItem>
     </items>
@@ -160,24 +218,23 @@
         <OverflowToolbar>
             <Title text="{i18n>lineItems}" level="H2"/>
             <ToolbarSpacer/>
-            <SearchField width="15rem" search="onLineItemSearch" placeholder="{i18n>search}"/>
-            <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press="onRefreshLineItems"/>
-            <Button icon="sap-icon://sort" tooltip="{i18n>sort}" press="onSortLineItems"/>
-            <Button icon="sap-icon://excel-attachment" tooltip="Export"/>
-            <Button icon="sap-icon://filter" tooltip="Filter"/>
-            <Button icon="sap-icon://action-settings" tooltip="Personalize Columns"/>
+            <!-- Search field removed per requirements -->
+            <Button icon="sap-icon://refresh" text="{i18n>refresh}" press="onRefreshLineItems"/>
+            <Button icon="sap-icon://sort" text="{i18n>sort}" press="onSortLineItems"/>
+            <Button icon="sap-icon://filter" tooltip="{i18n>filter}" press="onFilterLineItems"/>
+            <Button icon="sap-icon://action-settings" tooltip="{i18n>personalizeColumns}" press="onPersonalizeLineItems"/>
         </OverflowToolbar>
     </headerToolbar>
     <columns>
-        <Column><Text text="{i18n>lineType}"/></Column>
-        <Column><Text text="{i18n>purchaseOrder}"/></Column>
-        <Column><Text text="{i18n>description}"/></Column>
-        <Column><Text text="{i18n>materialCode}"/></Column>
-        <Column><Text text="{i18n>quantity}"/></Column>
-        <Column><Text text="{i18n>amount}"/></Column>
-        <Column><Text text="{i18n>glAccount}"/></Column>
-        <Column><Text text="{i18n>costCenter}"/></Column>
-        <Column><Text text="{i18n>wbs}"/></Column>
+        <Column id="lineItemsTableColumnLineType"><Text text="{i18n>lineType}"/></Column>
+        <Column id="lineItemsTableColumnPurchaseOrder"><Text text="{i18n>purchaseOrder}"/></Column>
+        <Column id="lineItemsTableColumnDescription"><Text text="{i18n>description}"/></Column>
+        <Column id="lineItemsTableColumnMaterialCode"><Text text="{i18n>materialCode}"/></Column>
+        <Column id="lineItemsTableColumnQuantity"><Text text="{i18n>quantity}"/></Column>
+        <Column id="lineItemsTableColumnAmount"><Text text="{i18n>amount}"/></Column>
+        <Column id="lineItemsTableColumnGLAccount"><Text text="{i18n>glAccount}"/></Column>
+        <Column id="lineItemsTableColumnCostCenter"><Text text="{i18n>costCenter}"/></Column>
+        <Column id="lineItemsTableColumnWBS"><Text text="{i18n>wbs}"/></Column>
     </columns>
     <items>
         <ColumnListItem>
@@ -187,7 +244,7 @@
                 <Text text="{Description}"/>
                 <Text text="{MaterialCode}"/>
                 <Text text="{Quantity}"/>
-                <Text text="{Amount}"/>
+                <Text text="{AmountFormatted}"/>
                 <Text text="{GLAccount}"/>
                 <Text text="{CostCenter}"/>
                 <Text text="{WBS}"/>

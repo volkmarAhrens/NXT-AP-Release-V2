@@ -1,0 +1,25 @@
+&lt;core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"&gt;
+    
+    &lt;!-- 
+        Simple reusable amount fragment with proper formatting
+        Shows amount with currency based on the OpenUI5 standard formatting
+        Usage: Include this fragment where amounts should be displayed
+    --&gt;
+    
+    &lt;HBox&gt;
+        &lt;Text text="{
+            path: 'amount',
+            type: 'sap.ui.model.type.Float',
+            formatOptions: {
+                minFractionDigits: 2,
+                maxFractionDigits: 2,
+                groupingEnabled: true
+            }
+        }" /&gt;
+        &lt;Text text=" " /&gt;
+        &lt;Text text="{currency}" /&gt;
+    &lt;/HBox&gt;
+    
+&lt;/core:FragmentDefinition&gt;

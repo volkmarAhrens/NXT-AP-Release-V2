@@ -1,0 +1,464 @@
+sap.ui.define([
+    "sap/ui/core/mvc/Controller",
+    "nxt/ap/release/util/formatter",
+    "sap/ui/model/json/JSONModel", 
+    "sap/m/MessageToast",
+    "sap/m/Dialog",
+    "sap/m/Button",
+    "sap/m/ActionSheet",
+    "sap/m/TablePersoController",
+    "sap/ui/model/Sorter"
+], function(Controller, formatter, JSONModel, MessageToast, Dialog, Button, ActionSheet, TablePersoController, Sorter) {
+    "use strict";
+
+    /**
+     * Controller for the AP Release main view.
+     * Handles data loading, PDF viewing, action buttons, and SSO user display.
+     */
+    return Controller.extend("nxt.ap.release.controller.APRelease", {
+        formatter: formatter,
+        
+        /**
+         * Formatter to print the entire row binding context as JSON for debugging.
+         * Handles both value and context, and tries to extract the row object if possible.
+         * @param {any} oValue - The value at the binding path (may be undefined).
+         * @returns {string} JSON string of the row context or value.
+         */
+        formatRowContext: function(oValue) {
+            try {
+                // Print the value if it's an object
+                if (typeof oValue === "object" && oValue !== null) {
+                    return JSON.stringify(oValue);
+                }
+                // Try to get the context object from 'this' if available
+                if (this && typeof this.getBindingContext === "function") {
+                    var ctx = this.getBindingContext();
+                    if (ctx && typeof ctx.getObject === "function") {
+                        return JSON.stringify(ctx.getObject());
+                    }
+                }
+                // Fallback to string value
+                return String(oValue);
+            } catch (e) {
+                return "Error: " + e;
+            }
+        },
+
+        /**
+         * Logs the binding context object of the first row in the invoices table for debugging.
+         */
+        onInvoicesTableUpdateFinished: function(oEvent) {
+            var oTable = oEvent.getSource();
+            var oItem = oTable.getItems()[0];
+            if (oItem) {
+                var oContext = oItem.getBindingContext("mock");
+                if (oContext) {
+                    console.log("[DEBUG] First row context object:", oContext.getObject());
+                } else {
+                    console.log("[DEBUG] No binding context on first row.");
+                }
+            } else {
+                console.log("[DEBUG] No items in table.");
+            }
+        },
+
+        onInit: function() {
+            // --- Table Personalization Controllers ---
+            this._oInvoicesTablePerso = new TablePersoController({
+                table: this.byId("invoicesTable"),
+                componentName: "invoicesTablePerso"
+            });
+            this._oLineItemsTablePerso = new TablePersoController({
+                table: this.byId("lineItemsTable"),
+                componentName: "lineItemsTablePerso"
+            });
+            
+            // Create a viewModel for dynamic header binding
+            var oViewModel = new JSONModel({
+                selectedInvoicePath: "/Invoices/0"
+            });
+            this.getView().setModel(oViewModel, "viewModel");
+            
+            var oView = this.getView();
+            
+            // Ensure the 'mock' model is available at the view level for binding
+            var oMockModel = this.getOwnerComponent().getModel("mock");
+            
+            // Ensure mock model is set as default at the view level for proper context binding
+            this.getView().setModel(oMockModel);
+            
+            if (oMockModel) {
+                oView.setModel(oMockModel, "mock");
+                // Set as default model (no name) on the view
+                oView.setModel(oMockModel);
+                console.log("[APRelease.controller.js] mock model set as default on view:", oView.getModel()?.getData());
+                
+                // Debug: Print the actual data structure at runtime
+                console.log("[DEBUG] oMockModel.getData():", oMockModel.getData());
+                console.log("[DEBUG] oView.getModel().getData():", oView.getModel().getData());
+                
+                var oTable = this.byId("invoicesTable");
+                if (oTable) {
+                    var oLineItemsTable = this.byId("lineItemsTable");
+                    // Set initial binding context for lineItemsTable to the first invoice (if any)
+                    var oSelectedItem = oTable && oTable.getItems && oTable.getItems()[0];
+                    var oInvoiceOverviewPanel = this.getView().byId("invoiceOverviewPanel");
+                    console.log("[DEBUG] getView().byId('invoiceOverviewPanel') at handler start =", oInvoiceOverviewPanel);
+                    
+                    if (!oInvoiceOverviewPanel) {
+                        console.error("[ERROR] invoiceOverviewPanel HBox not found! Check the id in the XML view.");
+                    }
+                    
+                    // If no selection, fallback to first item
+                    if (!oSelectedItem && oTable && oTable.getItems().length > 0) {
+                        oSelectedItem = oTable.getItems()[0];
+                    }
+                    
+                    if (oSelectedItem) {
+                        var oContext = oSelectedItem.getBindingContext();
+                        console.log("[DEBUG] Selected context path:", oContext && oContext.getPath());
+                        
+                        // Dynamically bind the header HBox context using bindElement
+                        this.getView().byId("invoiceOverviewPanel").bindElement({
+                            path: oContext.getPath()
+                        });
+                        console.log("[DEBUG] invoiceOverviewPanel bound to path (default model):", oContext.getPath());
+                        
+                        var sPath = oContext.getPath() + "/LineItems";
+                        if (oLineItemsTable) {
+                            oLineItemsTable.bindItems({
+                                path: sPath,
+                                template: oLineItemsTable.getBindingInfo("items").template
+                            });
+                            // Debug: log binding path
+                            console.log("[DEBUG] LineItemsTable bound to path:", sPath);
+                        } else {
+                            console.error("[ERROR] lineItemsTable not found at onInit");
+                        }
+                    }
+                }
+                
+                // Debug: print mock model data
+                console.log("[DEBUG] Mock model data loaded:", oMockModel.getData());
+                
+                // Ensure i18n model is available on the view for all controls
+                oView.setModel(this.getOwnerComponent().getModel("i18n"), "i18n");
+                
+                // Also set i18n model directly on headerVBox for explicit context
+                var oHeaderVBox = this.byId("headerVBox");
+                if (oHeaderVBox) {
+                    oHeaderVBox.setModel(this.getOwnerComponent().getModel("i18n"), "i18n");
+                }
+            }
+
+            // --- Robust mock data model setup ---
+            oView.setBusy(true);
+            var oModel = new JSONModel();
+            // The mock data model is now loaded globally in Component.js as the named "mock" model.
+            // No need to load or set it here. Only handle the view model and UI logic.
+            // Ensure the busy indicator is cleared if set elsewhere.
+            oView.setBusy(false);
+            
+            // Select the first invoice row by default after data is loaded (handled by table binding)
+            var oTable = oView.byId("invoicesTable");
+            if (oTable && oTable.getItems().length > 0) {
+                oTable.setSelectedItem(oTable.getItems()[0]);
+            }
+        },
+
+        /**
+         * Handler for invoice table selection change. Updates selectedInvoiceIndex in the view model.
+         */
+        onInvoiceSelectionChange: function(oEvent) {
+            var oTable = this.byId("invoicesTable");
+            var oLineItemsTable = this.byId("lineItemsTable");
+            var oHeaderHBox = this.byId("invoiceOverviewPanel");
+            var oSelectedItem = oEvent.getParameter("listItem") || (oTable && oTable.getSelectedItem && oTable.getSelectedItem());
+            
+            // Fallback to first item if nothing is selected
+            if (!oSelectedItem && oTable && oTable.getItems().length > 0) {
+                oSelectedItem = oTable.getItems()[0];
+                console.log("[DEBUG] No selection, fallback to first row.");
+            }
+            
+            if (oSelectedItem && oHeaderHBox) {
+                var oContext = oSelectedItem.getBindingContext();
+                var sPath = oContext.getPath(); // e.g. /Invoices/1
+                
+                // Bind header HBox context to selected invoice
+                oHeaderHBox.unbindElement();
+                oHeaderHBox.bindElement({ path: sPath });
+                console.log("[DEBUG] invoiceOverviewPanel bound to path (default model):", sPath);
+                
+                // Rebind line items table to selected invoice's LineItems
+                oLineItemsTable.bindItems({
+                    path: sPath + "/LineItems",
+                    template: oLineItemsTable.getBindingInfo("items").template
+                });
+                console.log("[DEBUG] LineItemsTable rebound to path:", sPath + "/LineItems");
+                
+                // Update viewModel for selected invoice index (for any other logic)
+                var iIdx = parseInt(sPath.split("/")[2], 10);
+                this.getView().getModel("viewModel").setProperty("/selectedInvoiceIndex", iIdx);
+            } else {
+                console.warn("[WARN] No invoice selected and no items in table.");
+            }
+        },
+
+        /**
+         * Formatter function to provide the LineItems array for the currently selected invoice.
+         * Used in the lineItemsTable binding in the XML view.
+         * @param {Array} aInvoices - The array of all invoices from the mock data model.
+         * @returns {Array} The LineItems array for the selected invoice, or an empty array if not available.
+         */
+        getSelectedInvoiceLineItems: function(aInvoices) {
+            var oView = this.getView();
+            var oViewModel = oView.getModel("viewModel");
+            var iIdx = oViewModel ? oViewModel.getProperty("/selectedInvoiceIndex") : 0;
+            
+            if (Array.isArray(aInvoices) && aInvoices[iIdx] && Array.isArray(aInvoices[iIdx].LineItems)) {
+                return aInvoices[iIdx].LineItems;
+            }
+            return [];
+        },
+
+        onOpenPdf: function(oEvent) {
+            // Get the context of the pressed row
+            var oContext = oEvent.getSource().getBindingContext();
+            var sPdfUrl = oContext.getProperty("pdfUrl");
+            if (sPdfUrl) {
+                window.open(sPdfUrl, "_blank");
+            } else {
+                MessageToast.show("PDF not available.");
+            }
+        },
+
+        onReleaseForPosting: function() {
+            MessageToast.show("Release for Posting pressed.");
+        },
+        
+        onRejectWithComment: function() {
+            MessageToast.show("Reject with Comment pressed.");
+        },
+        
+        onForwardWithInquiry: function() {
+            MessageToast.show("Forward with Inquiry pressed.");
+        },
+        
+        onDocuments: function() {
+            MessageToast.show("Documents pressed.");
+        },
+
+        /**
+         * Formats a value as a float with two decimals and thousands separators.
+         * @param {string|number} value
+         * @returns {string}
+         */
+        formatFloat2: function(value) {
+            if (value == null || value === "") return "";
+            var num = Number(value);
+            if (isNaN(num)) return value;
+            return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        },
+        
+        // --- Table Toolbar Handlers ---
+        /**
+         * Refreshes the invoices table data (reloads mock model)
+         */
+        onRefreshInvoices: function() {
+            var oModel = this.getView().getModel();
+            // If your mock data is in 'webapp/resources/mockdata.json', reload it here if needed
+            // Otherwise, just refresh the model
+            if (oModel && typeof oModel.loadData === "function") {
+                oModel.loadData("resources/mockdata.json");
+            } else if (oModel) {
+                oModel.refresh(true);
+            }
+            MessageToast.show("Invoices refreshed.");
+        },
+        
+        /**
+         * Refreshes the line items table (rebinding to current invoice)
+         */
+        onRefreshLineItems: function() {
+            var oTable = this.byId("lineItemsTable");
+            var oContext = this.byId("invoiceOverviewPanel").getBindingContext();
+            if (oTable && oContext) {
+                oTable.bindItems({
+                    path: oContext.getPath() + "/LineItems",
+                    template: oTable.getBindingInfo("items").template
+                });
+                MessageToast.show("Line items refreshed.");
+            }
+        },
+
+        /**
+         * Filter handler for invoices table (shows column menu)
+         */
+        onFilterInvoices: function(oEvent) {
+            this.byId("invoicesTable").openColumnMenu(0);
+        },
+        
+        /**
+         * Filter handler for line items table (shows column menu)
+         */
+        onFilterLineItems: function(oEvent) {
+            this.byId("lineItemsTable").openColumnMenu(0);
+        },
+        
+        /**
+         * Personalize handler for invoices table
+         */
+        onPersonalizeInvoices: function() {
+            this._oInvoicesTablePerso.openDialog();
+        },
+        
+        /**
+         * Personalize handler for line items table
+         */
+        onPersonalizeLineItems: function() {
+            this._oLineItemsTablePerso.openDialog();
+        },
+        
+        /**
+         * DEBUG: Log the current model data to the console and expose it globally
+         */
+        onDebugModel: function() {
+            var oData = this.getView().getModel().getData();
+            console.log("DEBUG MODEL DATA:", oData);
+            window._debugModelData = oData;
+            MessageToast.show("Check console for model data");
+        },
+
+        /**
+         * Sorts the invoices table based on the selected property from the dropdown.
+         */
+        onSortInvoices: function() {
+            var oTable = this.byId("invoicesTable");
+            var oSelect = this.byId("invoiceSortSelect");
+            var sProperty = oSelect.getSelectedKey();
+            if (oTable && sProperty) {
+                var oBinding = oTable.getBinding("items");
+                var oSorter = new Sorter(sProperty, false); // false = ascending
+                oBinding.sort(oSorter);
+                MessageToast.show("Sorted by: " + oSelect.getSelectedItem().getText());
+            }
+        },
+
+        /**
+         * Opens the column menu for the first column of the line items table for sorting.
+         */
+        onSortLineItems: function() {
+            var oTable = this.byId("lineItemsTable");
+            if (oTable) {
+                oTable.openColumnMenu(0);
+            }
+        },
+        
+        /**
+         * Handles the press event on the user avatar in the header.
+         * Opens a dialog with detailed user information if user authenticated via SSO.
+         * 
+         * @param {sap.ui.base.Event} oEvent The event object
+         * @public
+         */
+        onAvatarPress: function(oEvent) {
+            var oUser = this.getOwnerComponent().getModel("user").getData();
+            
+            // Create and open a user profile dialog
+            if (!this._oUserProfileDialog) {
+                this._oUserProfileDialog = new Dialog({
+                    title: "User Profile",
+                    contentWidth: "400px",
+                    content: new VBox({
+                        items: [
+                            new HBox({
+                                justifyContent: "Center",
+                                items: [
+                                    new Avatar({
+                                        src: "{user>/photoUrl}",
+                                        displaySize: "L",
+                                        displayShape: "Circle"
+                                    }).addStyleClass("sapUiMediumMarginTopBottom")
+                                ]
+                            }),
+                            new Title({ text: "{user>/displayName}" }).addStyleClass("sapUiTinyMarginBottom"),
+                            new Label({ text: "Email" }),
+                            new Text({ text: "{user>/email}" }).addStyleClass("sapUiSmallMarginBottom"),
+                            new Label({ text: "Account Type" }),
+                            new Text({ text: "{user>/accountType}" }).addStyleClass("sapUiSmallMarginBottom"),
+                            new Label({ text: "Roles" }),
+                            new Text({ text: "{= ${user>/roles}.join(', ') }" })
+                        ]
+                    }).addStyleClass("sapUiMediumMargin"),
+                    beginButton: new Button({
+                        text: "Close",
+                        press: function() {
+                            this._oUserProfileDialog.close();
+                        }.bind(this)
+                    })
+                });
+                
+                // Set the user model on the dialog
+                this._oUserProfileDialog.setModel(this.getOwnerComponent().getModel("user"), "user");
+                
+                // Add dialog to view for lifecycle management
+                this.getView().addDependent(this._oUserProfileDialog);
+            }
+            
+            this._oUserProfileDialog.open();
+        },
+        
+        /**
+         * Handles press events on the user menu button in the header.
+         * Opens a menu with user-related options such as settings, support, and logout.
+         * 
+         * @param {sap.ui.base.Event} oEvent The event object
+         * @public
+         */
+        onUserMenuPress: function(oEvent) {
+            var oButton = oEvent.getSource();
+            
+            // Create the action sheet only once
+            if (!this._oUserMenu) {
+                this._oUserMenu = new ActionSheet({
+                    placement: "Bottom",
+                    showCancelButton: true,
+                    buttons: [
+                        new Button({
+                            text: "My Profile",
+                            icon: "sap-icon://person-placeholder",
+                            press: this.onAvatarPress.bind(this)
+                        }),
+                        new Button({
+                            text: "Settings",
+                            icon: "sap-icon://action-settings",
+                            press: function() {
+                                MessageToast.show("Settings pressed");
+                            }
+                        }),
+                        new Button({
+                            text: "Help",
+                            icon: "sap-icon://sys-help",
+                            press: function() {
+                                MessageToast.show("Help pressed");
+                            }
+                        }),
+                        new Button({
+                            text: "Logout",
+                            icon: "sap-icon://log",
+                            press: function() {
+                                MessageToast.show("In a real SSO implementation, this would log you out");
+                            }
+                        })
+                    ]
+                });
+                
+                // Add to view for lifecycle management
+                this.getView().addDependent(this._oUserMenu);
+            }
+            
+            this._oUserMenu.openBy(oButton);
+        }
+    });
+});

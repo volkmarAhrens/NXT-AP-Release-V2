@@ -1,0 +1,13 @@
+&lt;mvc:View 
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="nxt.ap.release.controller.Amount"
+    displayBlock="true"&gt;
+    
+    &lt;HBox&gt;
+        &lt;Text id="amountValue" text="1,428.89" /&gt;
+        &lt;Text text=" " /&gt;
+        &lt;Text id="currencyCode" text="EUR" /&gt;
+    &lt;/HBox&gt;
+    
+&lt;/mvc:View&gt;
