@@ -40,16 +40,7 @@
                     <!-- User Email/Account Type Info with Language Indicator -->
                     <HBox alignItems="Center" class="sapUiTinyFontSize">
                         <Text text="{= ${user>/email} || ${user>/accountType} + ' Account' }" />
-                        <Label text=" | " class="sapUiTinyMarginBeginEnd" />
-                        <HBox alignItems="Center">
-                            <core:Icon src="sap-icon://translate" size="0.75rem" class="sapUiTinyMarginEnd" />
-                            <ObjectStatus 
-                                text="{path: 'viewModel>/currentLanguage', formatter: '.formatLanguageName'}"
-                                active="true" 
-                                state="Information"
-                                press="onOpenLanguageDialog"
-                                tooltip="Change Language" />
-                        </HBox>
+                        <!-- Language indicator removed as requested -->
                     </HBox>
                 </VBox>
                 <Button 
@@ -154,12 +145,12 @@
             <!-- Search field removed per requirements -->
             <Button text="{i18n>releaseForPosting}" type="Emphasized" press="onReleaseForPosting" icon="sap-icon://accept"/>
             <Button text="{i18n>rejectWithComment}" press="onRejectWithComment" icon="sap-icon://decline"/>
-            <Button text="{i18n>forwardWithInquiry}" press="onForwardWithInquiry" icon="sap-icon://forward"/>
+            <!-- 'Forward with Inquiry' button removed as requested -->
             <Button text="{i18n>documents}" press="onDocuments" icon="sap-icon://document"/>
             <Button text="{i18n>processLog}" press="onProcessLog" icon="sap-icon://process"/>
             <!-- NXT AI button removed as requested -->
             <ToolbarSpacer/>
-            <Button icon="sap-icon://refresh" text="{i18n>refresh}" press="onRefreshInvoices"/>
+            <!-- 'Refresh' button removed as requested -->
             <!-- Dropdown select removed per requirements -->
             <Button icon="sap-icon://sort" text="{i18n>sort}" press="onSortInvoices"/>
             <Button icon="sap-icon://filter" tooltip="{i18n>filter}" press="onFilterInvoices"/>
@@ -219,7 +210,7 @@
             <Title text="{i18n>lineItems}" level="H2"/>
             <ToolbarSpacer/>
             <!-- Search field removed per requirements -->
-            <Button icon="sap-icon://refresh" text="{i18n>refresh}" press="onRefreshLineItems"/>
+            <!-- 'Refresh' button removed as requested -->
             <Button icon="sap-icon://sort" text="{i18n>sort}" press="onSortLineItems"/>
             <Button icon="sap-icon://filter" tooltip="{i18n>filter}" press="onFilterLineItems"/>
             <Button icon="sap-icon://action-settings" tooltip="{i18n>personalizeColumns}" press="onPersonalizeLineItems"/>
