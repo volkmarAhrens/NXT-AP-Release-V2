@@ -157,7 +157,7 @@
             <Button text="{i18n>forwardWithInquiry}" press="onForwardWithInquiry" icon="sap-icon://forward"/>
             <Button text="{i18n>documents}" press="onDocuments" icon="sap-icon://document"/>
             <Button text="{i18n>processLog}" press="onProcessLog" icon="sap-icon://process"/>
-            <Button text="{i18n>nxtAi}" press="onNxtAi" icon="sap-icon://lightbulb"/>
+            <!-- NXT AI button removed as requested -->
             <ToolbarSpacer/>
             <Button icon="sap-icon://refresh" text="{i18n>refresh}" press="onRefreshInvoices"/>
             <!-- Dropdown select removed per requirements -->
